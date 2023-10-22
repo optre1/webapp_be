@@ -1,5 +1,6 @@
 
 import {createRequire} from 'module'
+import CryptoJS from 'crypto-js';
 const require = createRequire(import.meta.url);
 const mongo = require('mongodb').MongoClient
 const ObjectId = require('mongodb').ObjectId;
@@ -13,17 +14,6 @@ export default class DatabaseWrapper {
     DatabaseWrapper.instance = this;
   }
 
-  async connect() {
-    try {
-      this.client = await mongo.connect(
-        'mongodb://127.0.0.1:27017',
-        { useUnifiedTopology: true }
-      );
-      console.log('Connected to MongoDB');
-    } catch (err) {
-      console.error('Error occurred while connecting to MongoDB:', err);
-    }
-  }
   async authenticate(username, password) {
     try {
       const db = await this.getDB()
@@ -42,6 +32,7 @@ export default class DatabaseWrapper {
   async getUserWithId(uid) {
     try {
       const db = await this.getDB()
+      
       const document =
           await db.collection('login').findOne({'_id': new ObjectId(uid)});
           
@@ -52,6 +43,7 @@ export default class DatabaseWrapper {
       return null;
     }
   }
+
 
   async getAllUsers() {
     const db = await this.getDB()
@@ -128,6 +120,7 @@ export default class DatabaseWrapper {
 
     return items
   }
+
   async dealsDelete(deals) {
     try {
       const db = await this.getDB();
@@ -278,8 +271,28 @@ export default class DatabaseWrapper {
        await this.connect()
       }
       const db = this.client.db('app');
+      
       return db
 
+  }
+  async connect() {
+    try {
+      const url = 'mongodb://localhost:27017';
+      const dbName = 'app';
+      this.client = await mongo.connect(url, { useUnifiedTopology: true });
+      const db = this.client.db(dbName);
+      const collections = await db.collections();
+      if (collections.length === 0) {
+        await db.createCollection('login');
+        this.createUser({"name": "root", "password" : CryptoJS.SHA256("P@ssw0rd").toString(CryptoJS.enc.Hex), "isAdmin": true, "builtIn": true})
+        await db.createCollection('cookies');
+        await db.createCollection('tasks');
+        await db.createCollection('deals');
+      }
+      console.log('Connected to MongoDB');
+    } catch (err) {
+      console.error('Error occurred while connecting to MongoDB:', err);
+    }
   }
 
 
