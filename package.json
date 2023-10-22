@@ -5,8 +5,10 @@
   "description": "Demo project",
   "main": "index.js",
   "scripts": {
+    "prestart": "mkdir -p data/db",
     "start": "concurrently \"node server.js\" \"cd client && npm start\" \"npm run mongodb\"",
-    "mongodb": "mongod --dbpath data/db"
+    "mongodb": "mongod --dbpath data/db",
+    "postinstall": "cd client && npm install"
   },
   "repository": {
     "type": "git",
