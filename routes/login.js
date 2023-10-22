@@ -15,7 +15,12 @@ router.get('/loginWithCookie', async (req, res) => {
     res.json({success: false, message: errors.INVALID_TOKEN});
     return;
   }
-  let theCookie = await dbInstance.checkCookie(requestToken);
+  let result = await dbInstance.checkCookie(requestToken);
+  if (result.result == false) {
+    res.json({success: false, message: result.message});
+    return;
+  }
+  let theCookie = result.message;
   let date = new Date();
   if (theCookie && theCookie.validUntil > date) {
     res.json({success: true, message: errors.NO_ERR});
@@ -32,7 +37,13 @@ router.get('/logout', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
       await dbInstance.removeCookie(theCookie.token, theCookie.userId)
       res.json({success: true, message: errors.NO_ERR});

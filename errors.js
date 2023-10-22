@@ -8,6 +8,7 @@ const errBadResponse = 'Bad response'
 const errCouldNotCommunicateWithDatabase = 'Could not communicate with database'
 const errCouldNotCommunicateWithServer = 'Could not communicate with server'
 const errNoAdminRights = 'No admin rights'
+const errInvalidValue = 'Invalid value'
 const noErr = 'OK'
 const errors = {
     NO_ERR : noErr,
@@ -20,7 +21,8 @@ const errors = {
     BAD_RESPONSE: errBadResponse,
     DB_COM_ERR: errCouldNotCommunicateWithDatabase,
     SERVER_COM_ERR: errCouldNotCommunicateWithServer,
-    ADMIN_RIGHTS_REQUIRED: errNoAdminRights
+    ADMIN_RIGHTS_REQUIRED: errNoAdminRights,
+    INVALID_VALUE: errInvalidValue
 };
 
 export default errors;

@@ -12,7 +12,13 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
       const queryParams = req.query;
       // Get the number of query parameters
@@ -40,8 +46,14 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    let result = false
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
+
     if (theCookie) {
         let userRecord = await dbInstance.getUserWithId(theCookie.userId)
         if (!userRecord.isAdmin) {
@@ -63,8 +75,13 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    let result = false
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
         let userRecord = await dbInstance.getUserWithId(theCookie.userId)
         if (!userRecord.isAdmin) {

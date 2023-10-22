@@ -13,21 +13,23 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    if (theCookie) {
-      const queryParams = req.query;
-      // Get the number of query parameters
-      const numberOfParams = Object.keys(queryParams).length;
-      if(numberOfParams==0) {
-        var deals = await dbInstance.getAllDeals()
-        res.json({success: true , message: deals})
-        return
-      } else {
-        var dealIds = queryParams.dealIds.split(',')
-        var deals = await dbInstance.getDealsWithIds(dealIds)
-        res.json({success: true , message: deals})
-      }
-      res.json({success: true , message: []})
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+    const theCookie = result.message
+    const queryParams = req.query;
+    // Get the number of query parameters
+    const numberOfParams = Object.keys(queryParams).length;
+    if(numberOfParams==0) {
+      var deals = await dbInstance.getAllDeals()
+      res.json({success: true , message: deals})
+      return
+    } else {
+      var dealIds = queryParams.dealIds.split(',')
+      var deals = await dbInstance.getDealsWithIds(dealIds)
+      res.json({success: true , message: deals})
     }
    
   });
@@ -41,14 +43,26 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    let result = false
+
+    let result = await dbInstance.checkCookie(requestToken)
+    if(result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+    let theCookie = result.message
     if (theCookie) {
+      // Check that value only contains digits
+      if (!/^\d+$/.test(value)) {
+        res.json({success: false, message: errors.INVALID_VALUE})
+        return
+      }
+      
       let result = await dbInstance.createDeal({"name": name, "value": value, "status": status})
       res.json({success: result, message: result ? errors.NO_ERR : errors.DB_COM_ERR});
       // Send response back to the client
     }
   });
+  
 
   router.post('/delete', async (req, res) => {
     const dealIds = req.body.selectedDeals;
@@ -59,11 +73,15 @@ router.get('/get', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    let result = false
+    let cookieResult = await dbInstance.checkCookie(requestToken)
+    if(cookieResult.result == false) {
+      res.json({success: false, message: cookieResult.message})
+      return
+    }
+    let theCookie = cookieResult.message
     if (theCookie) {
       let result = await dbInstance.deleteDeals(dealIds)
-      res.json({success: result, message: ''});
+      res.json({success: result, message: errors.NO_ERR});
       // Send response back to the client
     }
   });

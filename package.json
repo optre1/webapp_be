@@ -26,6 +26,7 @@
     "react-spinners": "^0.13.8"
   },
   "devDependencies": {
-    "concurrently": "^8.2.1"
+    "concurrently": "^8.2.1",
+    "purgecss": "^5.0.0"
   }
 }

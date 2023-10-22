@@ -16,8 +16,13 @@ router.post('/create', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    let result = false
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
       let userRecord = await dbInstance.getUserWithId(theCookie.userId)
       let uid = userRecord._id.toString()
@@ -32,7 +37,7 @@ router.post('/create', async (req, res) => {
         'owner': uid
       }
   
-      result = await dbInstance.createTask(newTask)
+      let result = await dbInstance.createTask(newTask)
       res.json({success: result, message: result ? errors.NO_ERR : errors.DB_COM_ERR});
       // Send response back to the client
     }
@@ -46,7 +51,13 @@ router.post('/create', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
       const queryParams = req.query;
       // Get the number of query parameters
@@ -55,7 +66,7 @@ router.post('/create', async (req, res) => {
         var tasks = await dbInstance.getAllTasks()
         var users = await dbInstance.getAllUsers()
         var deals = await dbInstance.getAllDeals()
-        var result = []
+        var results = []
         tasks.forEach((task) => {
             const taskData = { ...task };
             const dealId = taskData.dealId;
@@ -67,10 +78,10 @@ router.post('/create', async (req, res) => {
             taskData.dealName = deal ? deal.name : '';
             taskData.ownerName = owner ? owner.name : '';
             taskData.assigneeName = assigneeUser? assigneeUser.userName : '';
-            result.push(taskData);
+            results.push(taskData);
           });
-        if (result.length > 0) {
-          res.json({success: true , message: result})
+        if (results.length > 0) {
+          res.json({success: true , message: results})
           return
         } else {
             res.json({success: false , message: errors.RECORD_NOT_FOUND})
@@ -91,7 +102,13 @@ router.post('/create', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    }
+
+    let theCookie = result.message
     if (theCookie) {
       const tasks = req.body.selectedTasks
       const result = dbInstance.tasksDelete(tasks)

@@ -4,7 +4,7 @@ import CryptoJS from 'crypto-js';
 const require = createRequire(import.meta.url);
 const mongo = require('mongodb').MongoClient
 const ObjectId = require('mongodb').ObjectId;
-
+import errors from './errors.js';
 export default class DatabaseWrapper {
   constructor() {
     if (DatabaseWrapper.instance) {
@@ -63,9 +63,20 @@ export default class DatabaseWrapper {
   }
 
   async checkCookie(token) {
+    if (!token) {
+      return {"result" : false, "message": errors.INVALID_TOKEN}
+    }
+
     const db = await this.getDB()
+    if(!db) {
+      return {"result": false, "message": errors.DB_COM_ERR}
+    }
     const document = await db.collection('cookies').findOne({'token': token})
-    return document
+    if (document && document.validUntil > new Date()) {
+      return {"result": true, "message": document}
+    } else {
+      return {"result": false, "message": errors.INVALID_TOKEN}
+    }
   }
   async removeCookie(token, uid) {
     const db = await this.getDB()

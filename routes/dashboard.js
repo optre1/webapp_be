@@ -13,15 +13,17 @@ router.get('/', async (req, res) => {
       res.json({success: false, message: errors.INVALID_TOKEN})
       return
     }
-    let theCookie = await dbInstance.checkCookie(requestToken)
-    if (theCookie) {
+    let result = await dbInstance.checkCookie(requestToken)
+    if (result.result == false) {
+      res.json({success: false, message: result.message})
+      return
+    } else {
+      let theCookie = result.message
       let userRecord = await dbInstance.getUserWithId(theCookie.userId)
-      
+      //TODO - error hnadling userRecord
       res.json({success: true, message: userRecord});
     }
-    else {
-      res.json({success: false, message: errors.INVALID_TOKEN})
-    }
+    
   });
 
   export default router;
