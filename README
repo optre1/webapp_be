@@ -1,0 +1,11 @@
+After cloning run 'git submodule init' , 'git submodule update' to pull frontend which is located in 'client/'
+
+How to run:
+
+1. install npm
+2. install mongodb
+3. run in project root folder 'npm install'
+4. run in project root folder 'npm start'
+
+A new db will be initialised. The default user is 'root' and the password is 'P@ssw0rd'
+If you want to have the site accessible from other devices change the route in 'client/src/setupProxy.js' to contain you LAN ip addr(for lan access) or public ip(for internet access)
