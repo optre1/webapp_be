@@ -8,7 +8,8 @@
     "prestart": "mkdir -p data/db",
     "start": "concurrently \"node server.js\" \"cd client && npm start\" \"npm run mongodb\"",
     "mongodb": "mongod --dbpath data/db",
-    "postinstall": "cd client && npm install"
+    "postinstall": "cd client && npm install",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -27,6 +28,8 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.1",
-    "purgecss": "^5.0.0"
+    "jest": "^29.7.0",
+    "purgecss": "^5.0.0",
+    "supertest": "^6.3.3"
   }
 }
